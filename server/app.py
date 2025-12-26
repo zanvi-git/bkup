@@ -158,34 +158,7 @@ def cleanup_old_chunks():
 def health_check():
     return jsonify({"status": "healthy", "upload_folder": UPLOAD_FOLDER}), 200
 
-@app.route('/upload', methods=['POST'])
-@require_api_key
-def upload_file():
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part"}), 400
-    
-    file = request.files['file']
-    
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
-    
-    category = request.form.get('category', 'general')
-    category = secure_filename(category)
-    
-    category_path = os.path.join(app.config['UPLOAD_FOLDER'], category)
-    os.makedirs(category_path, exist_ok=True)
-    
-    filename = secure_filename(file.filename)
-    save_path = os.path.join(category_path, filename)
-    file.save(save_path)
-    
-    metadata = get_file_metadata(save_path)
-    metadata['category'] = category
-    
-    return jsonify({
-        "message": f"File {filename} uploaded successfully",
-        "metadata": metadata
-    }), 201
+# Simple upload endpoint is disabled. Use /upload/chunked instead.
 
 @app.route('/upload/chunked', methods=['POST'])
 @require_api_key

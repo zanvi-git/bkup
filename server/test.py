@@ -45,16 +45,13 @@ def test_upload_with_category():
             f.write(content)
         
         try:
-            with open(filename, 'rb') as f:
-                files = {'file': f}
-                data = {'category': category}
-                headers = {'X-API-Key': API_KEY}
-                response = requests.post(f"{BASE_URL}/upload", files=files, data=data, headers=headers)
+            client = ChunkedUploadClient(BASE_URL, API_KEY, chunk_size=1024) # Use small chunks for small test files
+            result = client.upload_file(filename, category=category)
             
-            if response.status_code == 201:
-                print(f"[PASS] Upload {filename} to category '{category}': {response.json()['message']}")
+            if result and 'metadata' in result:
+                print(f"[PASS] Upload {filename} to category '{category}': {result['message']}")
             else:
-                print(f"[FAIL] Upload {filename} failed: {response.text}")
+                print(f"[FAIL] Upload {filename} failed: {result}")
                 return False
         except Exception as e:
             print(f"[FAIL] Upload {filename} exception: {e}")
