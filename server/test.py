@@ -1,5 +1,3 @@
-#this script is for debug purpose only, verifies the server functionality.
-
 import requests
 import os
 import time
@@ -50,7 +48,8 @@ def test_upload_with_category():
             with open(filename, 'rb') as f:
                 files = {'file': f}
                 data = {'category': category}
-                response = requests.post(f"{BASE_URL}/upload", files=files, data=data)
+                headers = {'X-API-Key': API_KEY}
+                response = requests.post(f"{BASE_URL}/upload", files=files, data=data, headers=headers)
             
             if response.status_code == 201:
                 print(f"[PASS] Upload {filename} to category '{category}': {response.json()['message']}")
@@ -68,7 +67,8 @@ def test_upload_with_category():
 
 def test_list_files():
     try:
-        response = requests.get(f"{BASE_URL}/files")
+        headers = {'X-API-Key': API_KEY}
+        response = requests.get(f"{BASE_URL}/files", headers=headers)
         if response.status_code == 200:
             data = response.json()
             if 'files' in data:
@@ -90,7 +90,8 @@ def test_list_files():
 def test_list_files_by_category():
     category = "photos"
     try:
-        response = requests.get(f"{BASE_URL}/files?category={category}")
+        headers = {'X-API-Key': API_KEY}
+        response = requests.get(f"{BASE_URL}/files?category={category}", headers=headers)
         if response.status_code == 200:
             data = response.json()
             print(f"[PASS] List files in '{category}': Found {len(data['files'])} files")
@@ -104,7 +105,8 @@ def test_list_files_by_category():
 
 def test_list_categories():
     try:
-        response = requests.get(f"{BASE_URL}/categories")
+        headers = {'X-API-Key': API_KEY}
+        response = requests.get(f"{BASE_URL}/categories", headers=headers)
         if response.status_code == 200:
             data = response.json()
             print(f"[PASS] List categories: Found {data['total']} categories")
@@ -122,7 +124,8 @@ def test_metadata():
     category = "photos"
     filename = "test_photo.txt"
     try:
-        response = requests.get(f"{BASE_URL}/metadata/{category}/{filename}")
+        headers = {'X-API-Key': API_KEY}
+        response = requests.get(f"{BASE_URL}/metadata/{category}/{filename}", headers=headers)
         if response.status_code == 200:
             metadata = response.json()
             print(f"[PASS] Get metadata for {category}/{filename}:")
@@ -139,7 +142,8 @@ def test_download():
     category = "documents"
     filename = "test_doc.txt"
     try:
-        response = requests.get(f"{BASE_URL}/download/{category}/{filename}")
+        headers = {'X-API-Key': API_KEY}
+        response = requests.get(f"{BASE_URL}/download/{category}/{filename}", headers=headers)
         if response.status_code == 200:
             print(f"[PASS] Download {category}/{filename}: {len(response.content)} bytes")
             return True
@@ -257,7 +261,8 @@ def test_chunked_upload_resume():
                 print(f"[FAIL] First chunk upload failed: {response.text}")
                 return False
         
-        response = requests.get(f"{BASE_URL}/upload/status/{file_id}")
+        headers = {'X-API-Key': API_KEY}
+        response = requests.get(f"{BASE_URL}/upload/status/{file_id}", headers=headers)
         if response.status_code == 200:
             status = response.json()
             if status['received_chunks'] == [0]:
@@ -288,7 +293,8 @@ def test_chunked_upload_resume():
 def test_upload_status_endpoint():
     try:
         file_id = "non_existent_upload"
-        response = requests.get(f"{BASE_URL}/upload/status/{file_id}")
+        headers = {'X-API-Key': API_KEY}
+        response = requests.get(f"{BASE_URL}/upload/status/{file_id}", headers=headers)
         
         if response.status_code == 200:
             data = response.json()
@@ -342,7 +348,8 @@ def test_invalid_checksum():
 
 def test_cleanup_old_chunks():
     try:
-        response = requests.post(f"{BASE_URL}/upload/cleanup")
+        headers = {'X-API-Key': API_KEY}
+        response = requests.post(f"{BASE_URL}/upload/cleanup", headers=headers)
         
         if response.status_code == 200:
             data = response.json()

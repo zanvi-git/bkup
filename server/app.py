@@ -159,6 +159,7 @@ def health_check():
     return jsonify({"status": "healthy", "upload_folder": UPLOAD_FOLDER}), 200
 
 @app.route('/upload', methods=['POST'])
+@require_api_key
 def upload_file():
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
@@ -187,6 +188,7 @@ def upload_file():
     }), 201
 
 @app.route('/upload/chunked', methods=['POST'])
+@require_api_key
 def upload_chunk():
     required_fields = ['chunk', 'filename', 'chunk_index', 'total_chunks', 'file_id', 'checksum']
     
@@ -231,6 +233,7 @@ def upload_chunk():
     }), 200
 
 @app.route('/upload/status/<file_id>', methods=['GET'])
+@require_api_key
 def upload_status(file_id):
     metadata = load_chunk_metadata(file_id)
     
@@ -254,6 +257,7 @@ def upload_status(file_id):
     }), 200
 
 @app.route('/upload/merge/<file_id>', methods=['POST'])
+@require_api_key
 def merge_upload(file_id):
     metadata = load_chunk_metadata(file_id)
     
@@ -279,6 +283,7 @@ def merge_upload(file_id):
     }), 201
 
 @app.route('/upload/cleanup', methods=['POST'])
+@require_api_key
 def cleanup_chunks():
     cleaned_count = cleanup_old_chunks()
     return jsonify({
@@ -287,6 +292,7 @@ def cleanup_chunks():
     }), 200
 
 @app.route('/files', methods=['GET'])
+@require_api_key
 def list_files():
     category = request.args.get('category')
     
@@ -320,6 +326,7 @@ def list_files():
         return jsonify({"files": all_files, "total": len(all_files)}), 200
 
 @app.route('/categories', methods=['GET'])
+@require_api_key
 def list_categories():
     categories = []
     for item in os.listdir(app.config['UPLOAD_FOLDER']):
@@ -334,6 +341,7 @@ def list_categories():
     return jsonify({"categories": categories, "total": len(categories)}), 200
 
 @app.route('/download/<category>/<filename>', methods=['GET'])
+@require_api_key
 def download_file(category, filename):
     category = secure_filename(category)
     filename = secure_filename(filename)
@@ -345,6 +353,7 @@ def download_file(category, filename):
     return send_from_directory(category_path, filename, as_attachment=True)
 
 @app.route('/metadata/<category>/<filename>', methods=['GET'])
+@require_api_key
 def file_metadata(category, filename):
     category = secure_filename(category)
     filename = secure_filename(filename)
