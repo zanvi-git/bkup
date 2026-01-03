@@ -359,6 +359,35 @@ def test_cleanup_old_chunks():
         print(f"[FAIL] Cleanup endpoint exception: {e}")
         return False
 
+def test_real_media_uploads():
+    parent_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+    files_to_upload = [
+        (os.path.join(parent_dir, "pic.jpg"), "photos"),
+        (os.path.join(parent_dir, "vid.mp4"), "videos")
+    ]
+    
+    client = ChunkedUploadClient(BASE_URL, API_KEY, chunk_size=4 * 1024 * 1024)
+    all_passed = True
+    
+    for filepath, category in files_to_upload:
+        if not os.path.exists(filepath):
+            print(f"[SKIP] Real file not found: {os.path.basename(filepath)}")
+            continue
+            
+        print(f"  Uploading {os.path.basename(filepath)} to {category}...")
+        try:
+            result = client.upload_file(filepath, category=category)
+            if result and 'metadata' in result:
+                print(f"  [PASS] {os.path.basename(filepath)} uploaded and merged")
+            else:
+                print(f"  [FAIL] {os.path.basename(filepath)} upload failed: {result}")
+                all_passed = False
+        except Exception as e:
+            print(f"  [FAIL] {os.path.basename(filepath)} exception: {e}")
+            all_passed = False
+            
+    return all_passed
+
 def main():
     print("="*60)
     print("Flask Backup Server - Enhanced Features Test Suite")
@@ -382,6 +411,7 @@ def main():
         ("Upload Status Endpoint", test_upload_status_endpoint),
         ("Invalid Checksum Rejection", test_invalid_checksum),
         ("Cleanup Old Chunks", test_cleanup_old_chunks),
+        ("Real Media Uploads", test_real_media_uploads),
     ]
     
     results = []
