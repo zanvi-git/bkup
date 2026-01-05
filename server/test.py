@@ -5,8 +5,8 @@ import hashlib
 import uuid
 from upload_client import ChunkedUploadClient
 
-BASE_URL = "http://localhost:5000"
-API_KEY = "test-api-key-12345"
+BASE_URL = "https://bkup.onrender.com"
+API_KEY = "your-secret-key-here"
 
 def create_test_file(filename, size_mb):
     size_bytes = size_mb * 1024 * 1024

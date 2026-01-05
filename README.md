@@ -29,6 +29,12 @@ python app.py
 > [!NOTE]
 > For production, the backend is expected at `https://bkup.onrender.com`.
 
+## 2. Test Server
+You can test the server using the `test.py` file. 
+```bash
+cd server
+python test.py #make sure to change the base url and update api key
+```
 ---
 
 With love.
