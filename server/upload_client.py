@@ -6,14 +6,33 @@ import uuid
 from typing import Callable, Optional
 
 class ChunkedUploadClient:
-    def __init__(self, base_url: str, api_key: Optional[str] = None, chunk_size: int = 4 * 1024 * 1024):
+    def __init__(self, base_url: str, chunk_size: int = 4 * 1024 * 1024):
         self.base_url = base_url.rstrip('/')
-        self.api_key = api_key
         self.chunk_size = chunk_size
         self.session = requests.Session()
-        
-        if self.api_key:
-            self.session.headers['X-API-Key'] = self.api_key
+        self.access_token = None
+    
+    def set_token(self, token: str):
+        self.access_token = token
+        self.session.headers['Authorization'] = f'Bearer {self.access_token}'
+
+    def register(self, username, password):
+        response = self.session.post(f"{self.base_url}/register", json={
+            "username": username,
+            "password": password
+        })
+        response.raise_for_status()
+        return response.json()
+
+    def login(self, username, password):
+        response = self.session.post(f"{self.base_url}/login", json={
+            "username": username,
+            "password": password
+        })
+        response.raise_for_status()
+        data = response.json()
+        self.set_token(data['access_token'])
+        return data
     
     def upload_file(
         self,
