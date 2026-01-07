@@ -37,4 +37,20 @@ python test.py #make sure to change the base url and update api key
 ```
 ---
 
+## Server Routes
+
+1. /register - register a new user
+2. /login - login as an existing user
+3. /status/me - get user status
+4. /health - ping server
+5. /upload/chunked - upload files (must use the client-side script for uploading)
+6. /upload/status/<file_id> - check file chunk/status
+7. /upload/merge/<file_id> - merge chunks of file
+8. /upload/cleanup - remove chunks of incomplete uploads
+9. /files - check current user's files
+10. /categories - file categories
+11. /download/<category>/<filename> - download file from server
+12. /metadata/<category>/<filename> - fetch file's metadata
+13. /delete/<category>/<filename> - delete a file
+
 With love.
